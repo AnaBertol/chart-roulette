@@ -410,8 +410,6 @@
                             📊 Chart Preview<br>
                             <small>Image could not be loaded</small>
                         </div>
-                        <div class="result-name">${chosenChart.name}</div>
-                        <button class="reset-btn" onclick="resetResult()">Continue Drawing</button>
                     `;
                     result.classList.add('show');
                 }, 300);
@@ -431,10 +429,7 @@
         }
 
         function resetResult() {
-            result.classList.remove('show');
-            setTimeout(() => {
-                result.innerHTML = '';
-            }, 300);
+            // Function kept for potential future use, but not called
         }
 
         // Initialize - no stats to update
