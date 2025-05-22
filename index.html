@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Roulette</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 480px;
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #4f46e5, transparent);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: #4f46e5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-weight: 900;
+            font-size: 24px;
+            color: white;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #4f46e5;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        .action-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .lottery-btn {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            padding: 18px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            min-height: 56px;
+        }
+
+        .lottery-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .lottery-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4);
+        }
+
+        .lottery-btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .lottery-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slot-machine {
+            animation: colorFlash 0.3s ease-in-out infinite alternate;
+        }
+
+        @keyframes colorFlash {
+            0% { 
+                background: linear-gradient(135deg, #4f46e5, #7c3aed);
+                color: white;
+            }
+            100% { 
+                background: linear-gradient(135deg, #7c3aed, #ec4899);
+                color: #fff;
+            }
+        }
+
+        .slot-text {
+            animation: slotRoll 0.1s ease-in-out infinite;
+        }
+
+        @keyframes slotRoll {
+            0% { content: '🎲 Drawing...'; }
+            16% { content: '🎯 Selecting...'; }
+            32% { content: '📊 Analyzing...'; }
+            48% { content: '🔥 Processing...'; }
+            64% { content: '⚡ Loading...'; }
+            80% { content: '🎪 Choosing...'; }
+            100% { content: '🎲 Drawing...'; }
+        }
+
+        .result {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-title {
+            font-size: 16px;
+            color: #4f46e5;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .result-subtitle {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-image {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid #333;
+            margin-bottom: 16px;
+            background: #111;
+        }
+
+        .result-name {
+            font-size: 14px;
+            color: #ccc;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .reset-btn {
+            background: transparent;
+            color: #888;
+            border: 1px solid #333;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .reset-btn:hover {
+            border-color: #4f46e5;
+            color: #4f46e5;
+        }
+
+        .reference-links {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+
+        .reference-link {
+            display: block;
+            color: #888;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .reference-link:hover {
+            color: #4f46e5;
+            border-color: #4f46e5;
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .loading-text {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top: 3px solid #4f46e5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .stats {
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .stat-number {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">📊</div>
+            <div class="title">Chart Roulette</div>
+            <div class="subtitle">Um desafio <a href="https://odd.studio" target="_blank" style="color: #4f46e5; text-decoration: none; border-bottom: 1px solid #4f46e5;">Odd Data & Design Studio</a></div>
+        </div>
+
+        <div class="action-section">
+            <button class="lottery-btn" id="lotteryBtn" onclick="startLottery()">
+                🎲 Draw Random Chart
+            </button>
+        </div>
+
+        <div class="result" id="result"></div>
+
+        <div class="reference-links">
+            <a href="https://oddstudio.notion.site/Refer-ncias-e47d418235a5489f97a0a30545c1a3f6" target="_blank" class="reference-link">
+                📚 Quer ajuda? Consulte essas referências sobre dataviz
+            </a>
+            <a href="https://oddstudio.notion.site/be343fce5bc34502bd005e0aeb775971?v=5909768102b4411dbcfb292283a11e0e" target="_blank" class="reference-link">
+                🎨 Quer dicas avançadas sobre uso de cores em gráficos? Consulte esse guia
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const charts = [
+            {
+                name: "Sales Performance Dashboard",
+                url: "https://oddstudio.notion.site/image/attachment%3Adf9b4af6-4c10-4830-918d-283da34bb630%3Ascagv2dy4dye1.jpeg?table=block&id=1fb37ee7-daab-8032-9c02-d67de25740a6&spaceId=7a169e72-f2ab-41c3-88e1-64aea74e0d25&width=2000&userId=&cache=v2"
+            },
+            {
+                name: "Color Accessibility Guide",
+                url: "https://oddstudio.notion.site/image/attachment%3A00b2b615-1d8e-49e7-b1fa-fe60342813ae%3Adont-worry-about-accessible-colour-combos-just-make-them-v0-k4syvh38hpze1.webp?table=block&id=1fb37ee7-daab-801f-a840-f49b431e0e6d&spaceId=7a169e72-f2ab-41c3-88e1-64aea74e0d25&width=2000&userId=&cache=v2"
+            },
+            {
+                name: "Data Visualization Framework",
+                url: "https://oddstudio.notion.site/image/attachment%3Ae9c8104d-d04e-4619-8f0b-be09a059e037%3AUntitled_(5).png?table=block&id=1fb37ee7-daab-807c-8993-f0ebbb8a3f13&spaceId=7a169e72-f2ab-41c3-88e1-64aea74e0d25&width=2000&userId=&cache=v2"
+            },
+            {
+                name: "Armed Conflicts Analysis",
+                url: "https://oddstudio.notion.site/image/attachment%3Ac7bb015a-2d75-4bef-ab57-a28bddc9ee79%3Anumber-of-armed-conflicts.png?table=block&id=1fb37ee7-daab-8066-bb6c-e24ec886e536&spaceId=7a169e72-f2ab-41c3-88e1-64aea74e0d25&width=2000&userId=&cache=v2"
+            },
+            {
+                name: "Market Research Insights",
+                url: "https://oddstudio.notion.site/image/attachment%3A4d2fa873-6a3c-410f-90fe-0032f7930e2b%3AUntitled_(4).png?table=block&id=1fb37ee7-daab-80a3-aebe-e715e7ece161&spaceId=7a169e72-f2ab-41c3-88e1-64aea74e0d25&width=2000&userId=&cache=v2"
+            },
+            {
+                name: "User Experience Metrics",
+                url: "https://oddstudio.notion.site/image/attachment%3A637e855d-8712-47a3-9d05-6ba063be72fe%3AUntitled_(3).png?table=block&id=1fb37ee7-daab-8055-a6da-d295fc7e2860&spaceId=7a169e72-f2ab-41c3-88e1-64aea74e0d25&width=2000&userId=&cache=v2"
+            },
+            {
+                name: "Financial Performance Report",
+                url: "https://oddstudio.notion.site/image/attachment%3Aad40d799-db08-4165-88be-f43d816e49ea%3Aunnamed_(27).png?table=block&id=1fb37ee7-daab-805e-b517-e01908fe7b84&spaceId=7a169e72-f2ab-41c3-88e1-64aea74e0d25&width=2000&userId=&cache=v2"
+            },
+            {
+                name: "Product Analytics Dashboard",
+                url: "https://oddstudio.notion.site/image/attachment%3A548731b0-4510-456b-be9b-e2cecb408223%3AUntitled_(2)_(1).png?table=block&id=1fb37ee7-daab-80ac-8259-c5de32ad1e8d&spaceId=7a169e72-f2ab-41c3-88e1-64aea74e0d25&width=2000&userId=&cache=v2"
+            },
+            {
+                name: "Customer Journey Visualization",
+                url: "https://oddstudio.notion.site/image/attachment%3A554d24b4-1369-40a9-922e-458d6306b619%3AUntitled_(2).png?table=block&id=1fb37ee7-daab-80ab-86dd-c2f855fcc990&spaceId=7a169e72-f2ab-41c3-88e1-64aea74e0d25&width=2000&userId=&cache=v2"
+            }
+        ];
+
+        let usedCharts = [];
+        let isSpinning = false;
+        let slotTexts = ['🎲 Drawing...', '🎯 Selecting...', '📊 Analyzing...', '🔥 Processing...', '⚡ Loading...', '🎪 Choosing...'];
+        let slotInterval;
+
+        const lotteryBtn = document.getElementById('lotteryBtn');
+        const result = document.getElementById('result');
+
+        function startSlotMachine() {
+            let index = 0;
+            slotInterval = setInterval(() => {
+                lotteryBtn.innerHTML = slotTexts[index];
+                index = (index + 1) % slotTexts.length;
+            }, 100);
+        }
+
+        function stopSlotMachine() {
+            clearInterval(slotInterval);
+        }
+
+        function startLottery() {
+            if (isSpinning) return;
+            
+            const availableCharts = charts.filter((_, index) => !usedCharts.includes(index));
+            if (availableCharts.length === 0) {
+                lotteryBtn.innerHTML = '🎉 All charts drawn!';
+                lotteryBtn.disabled = true;
+                return;
+            }
+
+            isSpinning = true;
+            lotteryBtn.disabled = true;
+            lotteryBtn.classList.add('slot-machine');
+            
+            startSlotMachine();
+
+            result.classList.remove('show');
+            result.innerHTML = `
+                <div class="loading">
+                    <div class="loading-text">Selecting your next challenge...</div>
+                    <div class="loading-spinner"></div>
+                </div>
+            `;
+            result.classList.add('show');
+
+            setTimeout(() => {
+                stopSlotMachine();
+                
+                const randomIndex = Math.floor(Math.random() * availableCharts.length);
+                const originalIndex = charts.findIndex(c => c === availableCharts[randomIndex]);
+                const chosenChart = availableCharts[randomIndex];
+                
+                usedCharts.push(originalIndex);
+                
+                result.classList.remove('show');
+                
+                setTimeout(() => {
+                    result.innerHTML = `
+                        <div class="result-header">
+                            <div class="result-title">Chart Selected</div>
+                            <div class="result-subtitle">Your next challenge</div>
+                        </div>
+                        <img src="${chosenChart.url}" alt="${chosenChart.name}" class="result-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; padding:40px; text-align:center; color:#666; background:#111; border-radius:12px;">
+                            📊 Chart Preview<br>
+                            <small>Image could not be loaded</small>
+                        </div>
+                        <div class="result-name">${chosenChart.name}</div>
+                        <button class="reset-btn" onclick="resetResult()">Continue Drawing</button>
+                    `;
+                    result.classList.add('show');
+                }, 300);
+
+                isSpinning = false;
+                lotteryBtn.disabled = false;
+                lotteryBtn.classList.remove('slot-machine');
+                
+                const remaining = charts.length - usedCharts.length;
+                if (remaining > 0) {
+                    lotteryBtn.innerHTML = '🎲 Draw Another Chart';
+                } else {
+                    lotteryBtn.innerHTML = '🎉 All charts drawn!';
+                    lotteryBtn.disabled = true;
+                }
+            }, 2000);
+        }
+
+        function resetResult() {
+            result.classList.remove('show');
+            setTimeout(() => {
+                result.innerHTML = '';
+            }, 300);
+        }
+
+        // Initialize - no stats to update
+    </script>
+</body>
+</html>
